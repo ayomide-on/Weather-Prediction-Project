@@ -1,0 +1,118 @@
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
+from sklearn import preprocessing
+import numpy as np
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import svm
+from sklearn.metrics import jaccard_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import log_loss
+from sklearn.metrics import confusion_matrix, accuracy_score
+import sklearn.metrics as metrics
+from sklearn.preprocessing import LabelEncoder
+
+# Download Data 
+path='https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-ML0101EN-SkillUp/labs/ML-FinalAssignment/Weather_Data.csv'
+df = pd.read_csv(path)
+df.head()
+
+#Data Preprocessing
+df_sydney_processed = pd.get_dummies(data= df, columns= ['RainToday', 'WindGustDir', 'WindDir9am', 'WindDir3pm'])
+df_sydney_processed.drop('Date', axis=1, inplace = True)
+
+#Data Model Training
+features = df_sydney_processed.drop(columns= 'RainTomorrow', axis=1)
+Y = df_sydney_processed['RainTomorrow']
+x_train, x_test, y_train, y_test = train_test_split(features ,Y,test_size=0.2, random_state=10)
+
+#Linear Regression 
+#Create and train a linear regression model
+LinearReg = linear_model.LinearRegression()
+x = np.asanyarray(x_train)
+y = np.asanyarray(y_train)
+# Create a LabelEncoder object
+le = LabelEncoder()
+
+# Fit the encoder and transform from yes or no to 1 or 0
+y = le.fit_transform(y_train)
+LinearReg.fit(x, y)
+
+#Prediction 
+prediction = LinearReg.predict(x_test)
+
+#Linear Regression Evaluation
+yH = le.fit_transform(y_test)
+LinearRegression_MAE = np.mean(np.absolute(prediction - yH))
+LinearRegression_MSE = np.mean((prediction - yH)**2)
+LinearRegression_R2 = metrics.r2_score(yH , prediction)
+print(LinearRegression_MAE)
+print(LinearRegression_MSE)
+print(LinearRegression_R2)
+
+#Reporting
+metrics = { 'Metrics' : ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "R-squared (R2)"], 
+            "value": [0.25631760994203784, 0.11572058282746588, 0.4271321073623009] }
+Report = pd.DataFrame(metrics)
+Report
+
+#K-nearest neighbors (KNN) Data  Modelling
+neigh = KNeighborsClassifier(n_neighbors = 4).fit(x_train, y_train)
+predictions =neigh.predict(x_test)
+
+#Calculate the value of the metric using predictions and the y_test dataframe
+import sklearn.metrics as metrics
+# Encode labels into numeric format
+le = LabelEncoder()
+# Encode 'No', 'Yes' to 0, 1 (or vice versa)
+y_test_encoded = le.fit_transform(y_test)
+# Ensure the predictions are encoded similarly
+y_pred_encoded = le.transform(predictions)
+
+# Calculate metrics
+KNN_Accuracy_Score = metrics.accuracy_score(y_test_encoded, y_pred_encoded)
+KNN_JaccardIndex = metrics.jaccard_score(y_test_encoded, y_pred_encoded)
+KNN_F1_Score = metrics.f1_score(y_test_encoded, y_pred_encoded)
+
+print(KNN_Accuracy_Score)
+print(KNN_JaccardIndex)
+print(KNN_F1_Score)
+
+#Decision Tree Data modelling
+Tree = DecisionTreeClassifier(criterion = "entropy", max_depth = 4)
+Tree.fit(x_train,y_train)
+
+#Prediction
+predictions =  Tree.predict(x_test)
+
+Tree_Accuracy_Score = accuracy_score(y_test, predictions)
+Tree_JaccardIndex = jaccard_score(y_test, predictions, pos_label= 'No')
+Tree_F1_Score = f1_score(y_test, predictions, pos_label= 'No')
+print(Tree_Accuracy_Score)
+print(Tree_JaccardIndex)
+print(Tree_F1_Score)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
