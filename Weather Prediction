@@ -99,20 +99,46 @@ print(Tree_Accuracy_Score)
 print(Tree_JaccardIndex)
 print(Tree_F1_Score)
 
+#Logistic Regression
+x_train, x_test, y_train, y_test = train_test_split(features, Y, test_size = 0.2, random_state =1) # Data Training
+LR = LogisticRegression(C = 0.01, solver = 'liblinear').fit(x_train, y_train)
+#Prediction 
+prediction = LR.predict(x_test)
+print(prediction)
+predict_proba = LR.predict_proba(x_test)
+print(predict_proba)
+#Evaluation
+LR_Accuracy_Score = accuracy_score(y_test, prediction)
+LR_JaccardIndex = jaccard_score(y_test, prediction, pos_label= 'No')
+LR_F1_Score = f1_score(y_test, prediction, pos_label= 'No')
+LR_log_loss = log_loss(y_test,predict_proba)
+print(LR_Accuracy_Score)
+print(LR_JaccardIndex)
+print(LR_F1_Score)
+print(LR_log_loss)
 
+#SVM Modelling
+SVM = svm.SVC(kernel = 'linear')
+SVM.fit(x_train, y_train)
+predictions = SVM.predict(x_test)
+SVM_Accuracy_Score = accuracy_score(y_test, predictions)
+SVM_JaccardIndex = jaccard_score(y_test, predictions, pos_label= 'No')
+SVM_F1_Score = f1_score(y_test, predictions, pos_label= 'No')
+print(SVM_Accuracy_Score)
+print(SVM_JaccardIndex)
+print(SVM_F1_Score)
 
+ #Reported accuracy of each classifier
+ metrics={ 'Metrics': ['KNN_Accuracy_Score', 'KNN_JaccardIndex', 'KNN_F1_Score',
+                       'Tree_Accuracy_Score', 'Tree_JaccardIndex', 'Tree_F1_Score',
+                       'LR_Accuracy_Score', 'LR_JaccardIndex', 'LR_F1_Score', 'LR_log_loss',
+                       'SVM_Accuracy_Score', 'SVM_JaccardIndex', 'SVM_F1_Score'],
+           "value": [0.8183206106870229, 0.4251207729468599, 0.5966101694915255,
+                     0.8183206106870229, 0.48034934497816595, 0.6489675516224189,
+                     0.8274809160305343, 0.7941712204007286, 0.8852791878172589, 0.38008468000382284,
+                     0.8458015267175573, 0.8126159554730983, 0.8966223132036848] }
 
-
-
-
-
-
-
-
-
-
-
-
-
+Report = pd.DataFrame(metrics)
+Report
 
 
